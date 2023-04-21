@@ -1,25 +1,51 @@
 import { galleryItems } from './gallery-items.js';
-// Change code below this line
-const newLightBox = document.querySelector(".gallery");
-const images = galleryItems
-  .map(
-    (image) =>
-      ` <div class="gallery__item">
-  <a class="gallery__link" href="${image.original}">
+
+const galleryContainer = document.querySelector('.gallery');
+// const itemsMarkup = createGalleryItemsMarkup(galleryItems);
+// galleryContainer.insertAdjacentHTML('beforeend', itemsMarkup);
+
+// // rendered items
+// function createGalleryItemsMarkup(items) {
+//   return items.map(({ preview, original, description }) => {
+//     return `<li>
+//   <a class="gallery__item" href="${original}">
+//     <img
+//       class="gallery__image"
+//       src="${preview}"
+//       alt="${description}"
+//     />
+//   </a>
+// </li>`
+//   }).join('');
+// }
+
+// /*
+// var lightbox = new SimpleLightbox('.gallery a', {
+//     captionsData: 'alt', captionPosition: 'bottom', captionDelay: 250
+// });
+// */
+// const lightbox = new SimpleLightbox('.gallery a', {
+//   captionsData: 'alt', captionPosition: 'bottom', captionDelay: 250
+// });
+
+// ------- 2nd variant --------------------------------------------------------------------------------
+const markup = galleryItems.reduce(
+  (acc, { original, preview, description }) =>
+    (acc += `<li>
+  <a class="gallery__item" href="${original}">
     <img
       class="gallery__image"
-      src="${image.preview}"
-      alt="${image.description}"
-      title="${image.description}"
+      src="${preview}"
+      alt="${description}"
     />
   </a>
-</div>`
-  )
-  .join("");
+</li>`),
+  ''
+);
 
-newLightBox.innerHTML = images;
+galleryContainer.insertAdjacentHTML('beforeend', markup);
 
-new SimpleLightbox(".gallery a", { captionDelay: 250 });
-
-console.log(galleryItems);
-
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});

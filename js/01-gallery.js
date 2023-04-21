@@ -1,58 +1,85 @@
-import { galleryItems } from "./gallery-items.js";
-// Change code below this line
+import { galleryItems } from './gallery-items.js';
 
-const lightbox = document.querySelector(".gallery");
-const images = galleryItems
-  .map(
-    (image) =>
-      ` <div class="gallery__item">
-  <a class="gallery__link" href="${image.original}">
+const galleryContainer = document.querySelector('.gallery');
+const itemsMarkup = createGalleryItemsMarkup(galleryItems);
+galleryContainer.insertAdjacentHTML('beforeend', itemsMarkup);
+galleryContainer.addEventListener('click', onImgClick);
+
+// rendered items
+function createGalleryItemsMarkup(items) {
+  return items
+    .map(({ preview, original, description }) => {
+      return `<div class="gallery__item">
+  <a class="gallery__link" href="${original}">
     <img
       class="gallery__image"
-      src="${image.preview}"
-      data-source="${image.original}"
-      alt="${image.description}"
+      src="${preview}"
+      data-source="${original}"
+      alt="${description}"
     />
   </a>
-</div>`
-  )
-  .join("");
+</div>`;
+    })
+    .join('');
+}
 
-lightbox.innerHTML = images;
-
-lightbox.addEventListener("click", (e) => {
-  e.preventDefault();
-  if (e.target.nodeName !== "IMG") return;
-  const source = e.target.dataset.source;
-  const instance = basicLightbox.create(
-    `<img src="${source}" width="800" height="600">`,
-    {
-      onShow: (instance) => {
-        document.addEventListener("keydown", (event) => {
-          if (event.key === "Escape") instance.close();
-        });
-      },
-    }
-  );
-
-  instance.show();
-});
-console.log(galleryItems);
-
-
-// const onClick = (e) => {
+// create modal
+// function onImgClick(e) {
 //   e.preventDefault();
-//   if (e.target.nodeName !== "IMG") return;
+//   // if (e.target.nodeName !== "IMG") return;
 
-//   const source = e.target.dataset.source;
+//   const isItemImage = e.target.classList.contains('gallery__image');
+//   if (!isItemImage) return;
 
-//   const instance = basicLightbox.create(`
-//     <img src="${source}" width="800" height="600">
-// `);
+//   const currentImgUrl = e.target.dataset.source;
 
+//   const instance = basicLightbox.create(
+//     `
+// 		<img src="${currentImgUrl}" width="1280" height="auto"/>
+//         `,
+//     {
+//       onShow: (instance) => {
+//         window.addEventListener('keydown', onEscKeyPress);
+//       },
+//       onClose: (instance) => {
+//         window.removeEventListener('keydown', onEscKeyPress);
+//       },
+//     }
+//   );
 //   instance.show();
-// };
 
-// lightbox.addEventListener("click", onClick);
+//   function onEscKeyPress(e) {
+//     const ESC_KEY_CODE = 'Escape';
+//     const isEscKey = e.code === ESC_KEY_CODE;
+//     if (!isEscKey) return;
+//     instance.close();
+//   }
+// }
 
+// ------- 2nd variant --------------------------------------------------------------------------------
 
+const instance = basicLightbox.create(
+  `
+<img width="1280" height="auto" src="">`,
+  {
+    onShow: (instance) => {
+      window.addEventListener('keydown', onEscKeyPress);
+    },
+    onClose: (instance) => {
+      window.removeEventListener('keydown', onEscKeyPress);
+    },
+  }
+);
+
+function onImgClick(e) {
+  e.preventDefault();
+  const datasetSource = e.target.dataset.source;
+  if (!datasetSource) return;
+  instance.element().querySelector('img').src = datasetSource;
+  instance.show();
+}
+
+function onEscKeyPress(e) {
+  if (e.code !== 'Escape') return;
+  instance.close();
+}
